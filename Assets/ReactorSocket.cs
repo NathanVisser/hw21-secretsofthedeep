@@ -1,5 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
+using Newtonsoft.Json.Bson;
 using UnityEngine;
 using UnityEngine.XR.Interaction.Toolkit;
 
@@ -13,6 +15,8 @@ public class ReactorSocket : MonoBehaviour
     private int crystalID;
     public int CrystalID => crystalID;
 
+    private XRBaseInteractable m_currentInteractable;
+
     public void OnCrystalSocketed(XRBaseInteractable interactor)
     {
         Debug.Log("Slotted");
@@ -21,6 +25,7 @@ public class ReactorSocket : MonoBehaviour
         {
             crystalID = crystal.ID;
             interactor.GetComponent<Rigidbody>().isKinematic = false;
+            m_currentInteractable = interactor;
         }
     }
 
@@ -28,6 +33,19 @@ public class ReactorSocket : MonoBehaviour
     {
         crystalID = -1;
         interactor.GetComponent<Rigidbody>().isKinematic = false;
+        m_currentInteractable = null;
     }
 
+    public void SetLock(bool locked)
+    {
+        if (m_currentInteractable != null)
+        {
+            var colliders = m_currentInteractable.GetComponents<Collider>();
+
+            foreach (Collider collider in colliders)
+            {
+                collider.enabled = !locked;
+            }
+        }
+    }
 }

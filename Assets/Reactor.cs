@@ -58,6 +58,8 @@ public class Reactor : MonoBehaviour
     {
         if (!m_attemptingStartup && !m_startingReactor)
         {
+            LockAll(true);
+
             m_attemptingStartup = true;
             StartCoroutine(RunStartupSequence());
         }
@@ -84,7 +86,6 @@ public class Reactor : MonoBehaviour
 
         for (int i = 0; i < 5; i++)
         {
-            Debug.Log($"Slot {i} = {m_sockets[i].CrystalID}");
             if (m_sockets[i].CrystalID != i)
                 match = false;
         }
@@ -98,7 +99,19 @@ public class Reactor : MonoBehaviour
             m_sourceReactor.Play();
             m_startingReactor = true;
         }
+        else
+        {
+            LockAll(false);
+        }
 
         m_attemptingStartup = false;
+    }
+
+    private void LockAll(bool locked)
+    {
+        foreach (ReactorSocket reactorSocket in m_sockets)
+        {
+            reactorSocket.SetLock(locked);
+        }
     }
 }
