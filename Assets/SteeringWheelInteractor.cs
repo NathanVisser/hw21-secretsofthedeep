@@ -1,10 +1,15 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.Events;
 using UnityEngine.XR.Interaction.Toolkit;
 
 public class SteeringWheelInteractor : XRBaseInteractable
 {
+    [System.Serializable]
+    public class DragDistanceEvent : UnityEvent<float> { }
+    public DragDistanceEvent OnSteering;
+
     [SerializeField]
     private float m_maxSteeringAmount = 180f;
     [SerializeField]
@@ -15,6 +20,13 @@ public class SteeringWheelInteractor : XRBaseInteractable
     private XRBaseInteractor m_currentInteractor;
     [SerializeField]
     private Transform m_wheelGraphic;
+    private float m_currentAngle = 0f;
+    private float m_lastAngle;
+
+    [SerializeField]
+    private float m_displayDailRotationAmount = 56f;
+    [SerializeField]
+    private Transform m_displayDail;
 
     void Update()
     {
@@ -22,8 +34,14 @@ public class SteeringWheelInteractor : XRBaseInteractable
         {
             var currentInterctorPos = Flatten(transform.InverseTransformPoint(m_currentInteractor.transform.position));
             var angle = Vector3.SignedAngle(m_interactorStartPos, currentInterctorPos, Vector3.forward);
-            Debug.Log(angle);
-            m_wheelGraphic.localRotation = Quaternion.Euler(0f, 0f, angle);
+            var totalAngle = Mathf.Clamp(m_currentAngle + angle, -m_maxSteeringAmount, m_maxSteeringAmount);
+            m_currentAngle = totalAngle;
+            m_wheelGraphic.localRotation = Quaternion.Euler(0f, 0f, totalAngle);
+            m_interactorStartPos = currentInterctorPos;
+            m_displayDail.transform.localRotation = Quaternion.Euler(0f, (totalAngle / m_maxSteeringAmount) * m_displayDailRotationAmount, 0f);
+
+            if (OnSteering != null)
+                OnSteering.Invoke(totalAngle / m_maxSteeringAmount);
         }
     }
 

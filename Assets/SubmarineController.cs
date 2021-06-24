@@ -101,6 +101,6 @@ public class SubmarineController : MonoBehaviour
 
     public void SetSteering(float value)
     {
-
+        m_turnAmount = value;
     }
 }
