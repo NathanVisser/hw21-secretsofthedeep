@@ -42,7 +42,7 @@ public class ButtonInteractable : MonoBehaviour
 
         float move = 0.0f;
 
-        if (m_Rigidbody.SweepTest(-worldAxis, out info, ReturnSpeed * Time.deltaTime + 0.005f))
+        if (m_Rigidbody.SweepTest(-worldAxis, out info, ReturnSpeed * Time.deltaTime + 0.005f, QueryTriggerInteraction.Collide))
         {//hitting something, if the contact is < mean we are pressed, move downward
             move = (ReturnSpeed * Time.deltaTime) - info.distance;
         }

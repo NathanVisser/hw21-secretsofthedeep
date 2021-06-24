@@ -45,6 +45,9 @@ public class DialInteractable : XRBaseInteractable
     public DialTurnedStepEvent OnDialStepChanged;
     public DialChangedEvent OnDialChanged;
 
+    [SerializeField]
+    private bool CenterOnStart;
+
     public float CurrentAngle => m_CurrentAngle;
     public int CurrentStep => m_CurrentStep;
     
@@ -79,6 +82,11 @@ public class DialInteractable : XRBaseInteractable
         
         if (Steps > 0) m_StepSize = RotationAngleMaximum / Steps;
         else m_StepSize = 0.0f;
+
+        if (CenterOnStart)
+        {
+            transform.rotation = Quaternion.Euler(transform.rotation.eulerAngles + LocalRotationAxis * (RotationAngleMaximum / 2f));
+        }
     }
 
     public override void ProcessInteractable(XRInteractionUpdateOrder.UpdatePhase updatePhase)
@@ -87,6 +95,9 @@ public class DialInteractable : XRBaseInteractable
         {
             if (updatePhase == XRInteractionUpdateOrder.UpdatePhase.Fixed)
             {
+                //m_SyncTransform.rotation = transform.rotation;
+                //m_SyncTransform.position = transform.position;
+
                 m_StartingWorldAxis = m_OriginalTransform.TransformDirection(LocalAxisStart);
                 
                 Vector3 worldAxisStart = m_SyncTransform.TransformDirection(LocalAxisStart);

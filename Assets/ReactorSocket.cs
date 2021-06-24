@@ -15,17 +15,21 @@ public class ReactorSocket : MonoBehaviour
     private int crystalID;
     public int CrystalID => crystalID;
 
+    private bool m_locking = false;
+
     private XRBaseInteractable m_currentInteractable;
 
     public void OnCrystalSocketed(XRBaseInteractable interactor)
     {
-        Debug.Log("Slotted");
         var crystal = interactor.gameObject.GetComponent<Crystal>();
         if (crystal != null)
         {
             crystalID = crystal.ID;
             interactor.GetComponent<Rigidbody>().isKinematic = false;
             m_currentInteractable = interactor;
+
+            if(m_locking)
+                LockInteractable(interactor, true);
         }
     }
 
@@ -36,16 +40,25 @@ public class ReactorSocket : MonoBehaviour
         m_currentInteractable = null;
     }
 
+    private void LockInteractable(XRBaseInteractable interactable, bool lockActor)
+    {
+        var colliders = interactable.GetComponents<Collider>();
+
+        foreach (Collider collider in colliders)
+        {
+            collider.enabled = !lockActor;
+        }
+
+        interactable.transform.parent = transform;
+    }
+
     public void SetLock(bool locked)
     {
+        m_locking = locked;
+
         if (m_currentInteractable != null)
         {
-            var colliders = m_currentInteractable.GetComponents<Collider>();
-
-            foreach (Collider collider in colliders)
-            {
-                collider.enabled = !locked;
-            }
+            LockInteractable(m_currentInteractable, locked);
         }
     }
 }

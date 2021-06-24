@@ -29,6 +29,12 @@ public class Reactor : MonoBehaviour
     private float m_reactorMaxPitch = 1f;
     [SerializeField]
     private float m_reactorMaxVolume = 1f;
+
+    [SerializeField]
+    private ObjectActivator activator;
+
+    private bool m_reactorRunning = false;
+
     // Start is called before the first frame update
     void Start()
     {
@@ -56,7 +62,7 @@ public class Reactor : MonoBehaviour
 
     public void AttemptStart()
     {
-        if (!m_attemptingStartup && !m_startingReactor)
+        if (!m_attemptingStartup && !m_startingReactor && !m_reactorRunning)
         {
             LockAll(true);
 
@@ -92,12 +98,8 @@ public class Reactor : MonoBehaviour
 
         if (match)
         {
-            //Start reactor
-            Debug.Log("Match!");
-            m_sourceReactor.pitch = m_reactorMinPitch;
-            m_sourceReactor.volume = 0f;
-            m_sourceReactor.Play();
-            m_startingReactor = true;
+            // Reactor started
+            Activated();
         }
         else
         {
@@ -105,6 +107,18 @@ public class Reactor : MonoBehaviour
         }
 
         m_attemptingStartup = false;
+    }
+
+    private void Activated()
+    {
+        m_sourceReactor.pitch = m_reactorMinPitch;
+        m_sourceReactor.volume = 0f;
+        m_sourceReactor.Play();
+        m_startingReactor = true;
+        m_reactorRunning = true;
+
+        if (activator!= null)
+            activator.Activated();
     }
 
     private void LockAll(bool locked)

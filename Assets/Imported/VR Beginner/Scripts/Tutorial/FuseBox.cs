@@ -7,13 +7,16 @@ public class FuseBox : MonoBehaviour
     public ParticleSystem[] SparkleFuseVFX;
     public ParticleSystem[] SwitchedOnVFX;
     public ParticleSystem[] SwitchedOffVFX;
-    
+    public ObjectActivator Activator;
     bool m_FusePresent = false;
 
     public void Switched(int step)
     {
         if (!m_FusePresent)
             return;
+
+        if (Activator != null)
+            Activator.Activated();
 
         if (step == 0)
         {

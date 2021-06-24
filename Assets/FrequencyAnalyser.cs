@@ -25,9 +25,9 @@ public class FrequencyAnalyser : MonoBehaviour
     private float m_pointXMax = 0.5f;
     private float m_pointYMin = -0.5f;
     private float m_pointYMax = 0.5f;
-    private int m_points = 50;
+    private int m_points = 100;
 
-    private float m_minFreq = 0.2f;
+    private float m_minFreq = 1f;
     private float m_maxFreq = 40f;
 
     private float freqA = .5f;
@@ -92,6 +92,7 @@ public class FrequencyAnalyser : MonoBehaviour
 
     private void Start()
     {
+        Toggle(false);
         DrawScreen();
     }
 
@@ -140,9 +141,9 @@ public class FrequencyAnalyser : MonoBehaviour
         Vector3[] inputPoints = new Vector3[m_points];
         Vector3[] crystalPoints = new Vector3[m_points];
 
-        for (int i = 0; i < inputPoints.Length; i++)
+        for (int i = 0; i < m_points; i++)
         {
-            float position = (float) i / (float) m_points;
+            float position = (float) i / (float)m_points;
 
             var inputPointA = CalculatePoint(position, freqA, AmplA, PhaseA);
             var inputPointB = CalculatePoint(position, freqB, AmplB, PhaseB);
@@ -170,6 +171,14 @@ public class FrequencyAnalyser : MonoBehaviour
 
         if(m_hasCrystal)
             CheckMatch();
+    }
+
+    public void Toggle(bool on)
+    {
+        m_ledA.enabled = on;
+        m_ledB.enabled = on;
+        m_lineRendererCrystal.enabled = on;
+        m_lineRendererInputs.enabled = on;
     }
 
     private void CheckMatch()
